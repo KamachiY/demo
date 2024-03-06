@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title th:text="#{title}"></title>
+</head>
+<body>
+	<h1 th:text="#{title}"></h1>
+	<p th:unless="${#lists.isEmpty(list)}" th:text="#{YesTable}"></p>
+	<p th:if="${#lists.isEmpty(list)}" th:text="#{NoTable}"></p>
+	<table border="1" th:unless="${#lists.isEmpty(list)}" style="table-layout: fixed;">
+		<tr>
+			<th>ID</th>
+			<th>名前</th>
+			<th>価格</th>
+		</tr>
+		<tr th:each="obj : ${list}" align="center">
+			<td th:text="${obj.id}"></td>
+			<td th:text="${obj.name}"></td>
+			<td th:text="${obj.price}"></td>
+			<!-- 編集ボタン -->
+			<td>
+				<form method="get" th:action="@{sample/{id}(id=${obj.id})}">
+					<input type="submit" value="編集">
+				</form>
+			</td>
+			<!-- 削除ボタン -->
+			<td>
+				<form method="post" th:action="@{sample/delete}">
+					<input type="hidden" name="id" th:value="${obj.id}">
+					<input type="submit" value="削除">
+				</form>
+			</td>
+		</tr>
+	</table>
+	<!-- 新規登録 -->
+	<p th:if="${complete}" th:text="${complete}" style="color:blue"></p>
+	<!-- newSampleがtrueの場合、新規登録処理、そうではない場合、更新処理にそれぞれ変更します -->
+	<form method="post"
+	       th:action="${form.isNew}? @{/sample/insert} : @{/sample/update}"
+	       th:object="${form}">
+	       <hr>
+<!--	       <label>ID　：</label>-->
+<!--	       <input type="number" th:field="*{id}">-->
+<!--	       <br>-->
+   	       <label>新規登録</label>
+	       <br>
+	       <label>名前：</label>
+	       <input type="text" th:field="*{name}">
+	       <p th:each="err : ${#fields.errors('*{name}')}" th:text="${err}"></p>
+	       <br>
+	       <label>価格：</label>
+	       <input type="number" th:field="*{price}">
+	       <p th:each="err : ${#fields.errors('*{price}')}" th:text="${err}"></p>
+	       <br>
+	       <input type="submit" value="送信">
+	</form>
+    <!-- 追加部分 -->
+    <p th:unless="${form.isNew}">
+		<a href="#" th:href="@{/sample}">一覧画面へ戻る</a>
+	</p>
+</body>
